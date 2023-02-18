@@ -1,0 +1,98 @@
+{% extends 'base.html' %}
+
+{% block content %}
+    <div class="wrapper_page">
+        <div class="main_content">
+            <div class="wrapper_result">
+                <div class="wrapper_loader" id="loader">
+                    <div class="align_loader">
+                        <div class="spinner-border text-primary" role="status">
+                            <span class="sr-only">Loading...</span>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            <form id="form">
+                <h4 class="pre_header">Is this one a good idea?</h4>
+                <hr class="line">
+                <h2 class="header">Movie predictions</h2>
+                {% csrf_token %}
+                <div class="wrapper_content">
+                    {{ form.as_p }}
+                </div>
+                <div class="wrapper_button">
+                    <button type="button" class="btn btn-light tab position">Back</button>
+                    <button type="button" class="btn btn-warning tab position">Next</button>
+                    <div class="align_button">
+                        <button type="reset" class="btn btn-light">Clear</button>
+                        <button id="predict" type="submit" value="submit" class="btn btn-warning predict_btn">Predict
+                        </button>
+                    </div>
+                </div>
+            </form>
+        </div>
+    </div>
+{% endblock %}
+
+{% block javascript %}
+    <script>
+        $('#form').submit(function (e) {
+            e.preventDefault();
+
+            let serialized_data = $(this).serialize();
+            const arr = serialized_data.split('&');
+
+            const value = arr.map(a => a.split('=')[1]);
+
+            arr.shift();
+
+            const new_serialized_data = arr.join('&');
+
+            $.ajax({
+                    type: 'POST',
+                    url: "{% url 'movies_data' %}",
+                    data: {
+                        csrfmiddlewaretoken: value[0],
+                        form_data: new_serialized_data,
+                    },
+                    beforeSend: function () {
+                        $('.wrapper_result').css('display', 'block');
+                        timer = setTimeout(function () {
+                            $('#loader').show();
+                        }, 100);
+                    },
+                    complete: function () {
+                        clearTimeout(timer);
+                        $('#loader').hide();
+                    },
+                    success: function (json) {
+                        $('.wrapper_result').prepend('<div class="result"><p class="text_result movie_name">«' + $("#id_name").val() + '»</p><p class="text_result">' + json + '</p><button type="button" id="button_result" class="btn button_result">Back to form</button></div>');
+
+                        const result_btn = $('#button_result');
+
+                        if (json === 'is not recommended') {
+                            $('.movie_name').css('color', '#dc3645');
+                            result_btn.addClass('btn-danger');
+                        } else if (json === 'is recommended') {
+                            $('.movie_name').css('color', '#28a745');
+                            result_btn.addClass('btn-success');
+                        }
+
+                        result_btn.click(function () {
+                            $('.wrapper_result').css('display', 'none');
+                            $('.result').remove();
+                        })
+                    },
+                    error: function () {
+                        $('.wrapper_result').prepend('<div class="result"><p class="text_result text_error movie_name">Something went wrong</p><p class="text_result">please, try again later</p><button type="button" id="button_result" class="btn btn-primary button_result">Back to form</button></div>');
+
+                        $('#button_result').click(function () {
+                            $('.wrapper_result').css('display', 'none');
+                            $('.result').remove();
+                        })
+                    }
+                }
+            )
+        })
+    </script>
+{% endblock javascript %}
