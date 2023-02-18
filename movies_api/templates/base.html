@@ -36,10 +36,10 @@
 {% endblock javascript %}
 
 <script>
-    $(document).ready(function () {
-        $(window).on('load', function () {
-            $('#page_loader').fadeOut()
-        });
+    new Promise(() => {
+        window.addEventListener('load', () => {
+            $('#overlay').fadeOut()
+        })
      });
 </script>
 </body>
