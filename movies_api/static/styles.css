@@ -278,7 +278,11 @@ button.btn.btn-warning.predict_btn {
         display: flex;
         flex-direction: column-reverse;
         align-items: flex-end;
-        row-gap: 12px;
+        /*row-gap: 12px;*/
+    }
+
+    .align_button > * + * { 
+        margin-bottom: 12px;
     }
 
     .btn {
