@@ -1,7 +1,5 @@
 .background {
     background-image: url("background.png");
-    background-size: cover;
-    background-position: center;
     margin: 0;
 }
 
@@ -185,12 +183,6 @@ button.btn.btn-warning.predict_btn {
 
 
 /* Adaptive */
-
-@media (max-width: 660px) {
-    .background {
-        background: #1b122b;
-    }
-}
 
 @media (min-width: 460px) and (max-width: 660px) {
     .wrapper_page {
