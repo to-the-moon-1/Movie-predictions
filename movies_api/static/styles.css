@@ -1,5 +1,6 @@
 .background {
     background-image: url("background.png");
+    background-size: cover;
     margin: 0;
 }
 
